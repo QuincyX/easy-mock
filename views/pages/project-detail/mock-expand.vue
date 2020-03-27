@@ -33,6 +33,22 @@
           </Panel>
         </Collapse>
       </Tab-pane>
+      <Tab-pane label="Vuex Action" name="vuex" v-if="mock.response_model && entities.js.length">
+        <Collapse>
+          <Panel>
+            Nuxt
+            <div slot="content">
+              <p v-for="(i,n) in request" :key="n">{{i}}</p>
+            </div>
+          </Panel>
+          <Panel>
+            SPA
+            <div slot="content">
+              <p v-for="(i,n) in request" :key="n">{{i}}</p>
+            </div>
+          </Panel>
+        </Collapse>
+      </Tab-pane>
     </Tabs>
   </div>
 </template>

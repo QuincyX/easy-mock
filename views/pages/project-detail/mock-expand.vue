@@ -34,17 +34,11 @@
         </Collapse>
       </Tab-pane>
       <Tab-pane label="Vuex Action" name="vuex" v-if="mock.response_model && entities.js.length">
-        <Collapse>
-          <Panel>
+        <Collapse value="1">
+          <Panel name="1">
             Nuxt
             <div slot="content">
-              <p v-for="(i,n) in request" :key="n">{{i}}</p>
-            </div>
-          </Panel>
-          <Panel>
-            SPA
-            <div slot="content">
-              <p v-for="(i,n) in request" :key="n">{{i}}</p>
+              <vuex-nuxt :request="request" :entities="entities" :response="response" :mock="mock"></vuex-nuxt>
             </div>
           </Panel>
         </Collapse>
@@ -60,8 +54,10 @@ import {
 } from 'swagger-parser-mock/lib/entity'
 import jsBeautify from 'js-beautify/js/lib/beautify'
 import DataTypeExpand from './data-type-expand'
+import vuexNuxt from '../../components/vuexContainer/nuxt'
 
 export default {
+  components: { vuexNuxt },
   props: {
     mock: {}
   },

@@ -27,19 +27,13 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json', '.md'],
     alias: {
-      'pages': resolve('../views/pages'),
-      'components': resolve('../views/components'),
-      'config': resolve('../views/config.json')
+      pages: resolve('../views/pages'),
+      components: resolve('../views/components'),
+      config: resolve('../views/config.json')
     }
   },
   module: {
     rules: [
-      {
-        test: /\.(vue|js)$/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-        exclude: /node_modules/
-      },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -66,14 +60,14 @@ module.exports = {
         test: /\.css$/,
         use: isProd
           ? ExtractTextPlugin.extract({
-            use: 'css-loader?minimize&importLoaders=1!postcss-loader',
-            fallback: 'vue-style-loader'
-          })
+              use: 'css-loader?minimize&importLoaders=1!postcss-loader',
+              fallback: 'vue-style-loader'
+            })
           : [
-            'vue-style-loader',
-            { loader: 'css-loader', options: { importLoaders: 1 } },
-            'postcss-loader'
-          ]
+              'vue-style-loader',
+              { loader: 'css-loader', options: { importLoaders: 1 } },
+              'postcss-loader'
+            ]
       },
       {
         test: /\.snippets/,
@@ -86,13 +80,17 @@ module.exports = {
           breaks: false,
           use: [
             require('markdown-it-attrs'),
-            [require('markdown-it-anchor'), {
-              permalinkClass: 'anchor',
-              slugify: require('transliteration').slugify,
-              permalinkSymbol: '<i class="ivu-icon ivu-icon-link octicon-link"></i>',
-              permalink: true,
-              permalinkBefore: true
-            }]
+            [
+              require('markdown-it-anchor'),
+              {
+                permalinkClass: 'anchor',
+                slugify: require('transliteration').slugify,
+                permalinkSymbol:
+                  '<i class="ivu-icon ivu-icon-link octicon-link"></i>',
+                permalink: true,
+                permalinkBefore: true
+              }
+            ]
           ]
         }
       }
@@ -104,15 +102,13 @@ module.exports = {
   },
   plugins: isProd
     ? [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false }
-      }),
-      new webpack.optimize.ModuleConcatenationPlugin(),
-      new ExtractTextPlugin({
-        filename: 'common.[chunkhash].css'
-      })
-    ]
-    : [
-      new FriendlyErrorsPlugin()
-    ]
+        new webpack.optimize.UglifyJsPlugin({
+          compress: { warnings: false }
+        }),
+        new webpack.optimize.ModuleConcatenationPlugin(),
+        new ExtractTextPlugin({
+          filename: 'common.[chunkhash].css'
+        })
+      ]
+    : [new FriendlyErrorsPlugin()]
 }

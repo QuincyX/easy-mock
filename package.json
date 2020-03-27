@@ -122,5 +122,10 @@
   },
   "optionalDependencies": {
     "fsevents": "*"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "insertSpaceBeforeFunctionParenthesis": true
   }
 }

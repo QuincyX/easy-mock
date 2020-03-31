@@ -12,44 +12,43 @@
       <div class="em-layout__nav" v-show="pageAnimated">
         <Menu theme="dark" :active-name="pageKey" mode="horizontal">
           <div class="nav-logo" @click="$router.push('/')">
-            <img src="/public/images/easy-mock.png">
+            <img src="/public/images/by-logo.png" />
           </div>
           <div class="nav-search">
-            <i-input v-model="searchValue" placeholder="Search Easy Mock" ref="search"></i-input>
+            <i-input
+              v-model="searchValue"
+              placeholder="Search by Mock"
+              ref="search"
+            ></i-input>
           </div>
           <Submenu name="1">
             <template slot="title">
-              <Icon type="pound"></Icon> {{$t('c.layout.menu[0][0]')}}
+              <Icon type="pound"></Icon> {{ $t('c.layout.menu[0][0]') }}
             </template>
-            <Menu-item
-              name="/"
-              @click.native="$router.push('/')">
-              <Icon type="person"></Icon> {{$t('c.layout.menu[0][1]')}}
+            <Menu-item name="/" @click.native="$router.push('/')">
+              <Icon type="person"></Icon> {{ $t('c.layout.menu[0][1]') }}
             </Menu-item>
-            <Menu-item
-              name="/group"
-              @click.native="$router.push('/group')">
-              <Icon type="person-stalker"></Icon> {{$t('c.layout.menu[0][2]')}}
+            <Menu-item name="/group" @click.native="$router.push('/group')">
+              <Icon type="person-stalker"></Icon>
+              {{ $t('c.layout.menu[0][2]') }}
             </Menu-item>
           </Submenu>
           <Menu-item
             name="/workbench"
-            @click.native="$router.push('/workbench')">
-            <Icon type="code-working"></Icon> {{$t('c.layout.menu[1]')}}
+            @click.native="$router.push('/workbench')"
+          >
+            <Icon type="code-working"></Icon> {{ $t('c.layout.menu[1]') }}
           </Menu-item>
           <Menu-item
             name="/dashboard"
-            @click.native="$router.push('/dashboard')">
-            <Icon type="ios-speedometer"></Icon> {{$t('c.layout.menu[2]')}}
+            @click.native="$router.push('/dashboard')"
+          >
+            <Icon type="ios-speedometer"></Icon> {{ $t('c.layout.menu[2]') }}
           </Menu-item>
-          <Menu-item
-            name="/docs"
-            @click.native="$router.push('/docs')">
-            <Badge dot :count="readChangelog ? '0' : '1'">
-              <Icon type="ios-book"></Icon> {{$t('c.layout.menu[3]')}}
-            </Badge>
+          <Menu-item name="/docs" @click.native="$router.push('/docs')">
+            <Icon type="ios-book"></Icon> {{ $t('c.layout.menu[3]') }}
           </Menu-item>
-          <Submenu name="100">
+          <!-- <Submenu name="100">
             <template slot="title">
               <Icon type="egg"></Icon> {{$t('c.layout.menu[4][0]')}}
             </template>
@@ -68,28 +67,39 @@
               @click="open('http://mockjs.com/examples.html')">
               <Icon type="link"></Icon> {{$t('c.layout.menu[4][2]')}}
             </li>
+          </Submenu> -->
+          <Submenu name="200">
+            <template slot="title">
+              <Icon type="home"></Icon> 本原OPS
+            </template>
+            <Menu-item name="/" @click.native="open('//ops.besmile.me/')">
+              OPS
+            </Menu-item>
+            <Menu-item name="/" @click.native="open('//docs.besmile.me/')">
+              Doc
+            </Menu-item>
+            <Menu-item name="/group" @click.native="open('//git.besmile.me/')">
+              GitLab
+            </Menu-item>
           </Submenu>
           <Submenu name="5" class="nav-avatar" v-show="userHeadImg">
             <template slot="title">
-              <img :src="userHeadImg" v-show="userHeadImg"/>
+              <img :src="userHeadImg" v-show="userHeadImg" />
             </template>
-            <Menu-item
-              name="/profile"
-              @click.native="$router.push('/profile')">
-              <Icon type="edit"></Icon> {{$t('c.layout.menu[5][0]')}}
+            <Menu-item name="/profile" @click.native="$router.push('/profile')">
+              <Icon type="edit"></Icon> {{ $t('c.layout.menu[5][0]') }}
             </Menu-item>
-            <Menu-item
-              name="/log-out"
-              @click.native="logOut">
-              <Icon type="log-out"></Icon> {{$t('c.layout.menu[5][1]')}}
+            <Menu-item name="/log-out" @click.native="logOut">
+              <Icon type="log-out"></Icon> {{ $t('c.layout.menu[5][1]') }}
             </Menu-item>
           </Submenu>
           <Menu-item
             class="nav-avatar"
             name="/login"
             @click.native="$router.push('/login')"
-            v-show="!userHeadImg">
-            <Icon type="log-in"></Icon> {{$t('c.layout.menu[5][2]')}}
+            v-show="!userHeadImg"
+          >
+            <Icon type="log-in"></Icon> {{ $t('c.layout.menu[5][2]') }}
           </Menu-item>
         </Menu>
       </div>
@@ -99,7 +109,9 @@
         <router-view></router-view>
       </transition>
     </div>
-    <p class="em-layout__copyright" v-if="copyright && pageAnimated">{{copyright}}</p>
+    <p class="em-layout__copyright" v-if="copyright && pageAnimated">
+      {{ copyright }}
+    </p>
   </div>
 </template>
 
@@ -114,7 +126,7 @@ import Emitter from '../../mixins/emitter'
 export default {
   name: 'EmLayout',
   mixins: [Emitter],
-  data () {
+  data() {
     return {
       searchValue: '',
       pageKey: '',
@@ -122,35 +134,35 @@ export default {
     }
   },
   computed: {
-    userHeadImg () {
+    userHeadImg() {
       return this.$store.state.user.headImg
     },
-    readChangelog () {
+    readChangelog() {
       return this.$store.state.app.readChangelog
     }
   },
-  mounted () {
+  mounted() {
     this.pageKey = this.$route.path
     this.show = true
   },
   watch: {
-    '$route' (to) {
+    $route(to) {
       this.pageKey = to.path
     },
-    searchValue: function (value) {
+    searchValue: function(value) {
       this.broadcast('group', 'query', value)
       this.broadcast('project', 'query', value)
       this.broadcast('projectDetail', 'query', value)
     }
   },
   methods: {
-    open (url) {
+    open(url) {
       window.open(url)
     },
-    logOut () {
+    logOut() {
       this.$router.push('/log-out')
     },
-    onSearch () {
+    onSearch() {
       this.$refs.search.focus()
     }
   }

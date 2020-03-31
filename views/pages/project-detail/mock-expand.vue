@@ -36,7 +36,7 @@
       <Tab-pane label="Vuex Action" name="vuex" v-if="mock.response_model && entities.js.length">
         <Collapse value="1">
           <Panel name="1">
-            Nuxt
+            Nuxt module
             <div slot="content">
               <vuex-nuxt :request="request" :entities="entities" :response="response" :mock="mock"></vuex-nuxt>
             </div>

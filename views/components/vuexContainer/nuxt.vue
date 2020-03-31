@@ -20,7 +20,7 @@ export default {
     result() {
       if (!this.request.length) {
         return `    /** ${this.mock.description} **/
-    ${this.mock.method}${this.mock.url.replace('/', '_')}({}) {
+    ['${this.mock.method}${this.mock.url.replace('/', '_')}']({}) {
       return this.$http.${this.mock.method}( '${this.mock.url}')
     },`
       } else {

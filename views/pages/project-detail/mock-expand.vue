@@ -16,9 +16,6 @@
             status: {{i.code}} - {{i.message}}
             <div slot="content">
               <Table row-key="name" :columns="columnsResponseSchema" :data="responseSchema"></Table>
-              <p>
-                <pre>{{i.response.schema && i.response.schema.properties ? i.response.schema.properties:i.response.schema}}</pre>
-              </p>
             </div>
           </Panel>
         </Collapse>
@@ -138,44 +135,17 @@ export default {
     responseSchema(){
       if(this.response && this.response[0]){
         if(this.response[0].response.schema.type==='object'){
-          const schema = this.response[0].response.schema.properties || {}
-          return Object.keys(schema).map(o=>{
-            const result =  {
-              name:o,
-              type:schema[o].type,
-              format:schema[o].format,
-              description:schema[o].description || '',
-              _disableExpand:!['array','object'].includes(schema[o].type),
-              children:[]
-            }
-            if(schema[o].type==='array'){
-              result.children=[{name:'items',type:schema[o].items.type}]
-              const items = schema[o].items.properties || {}
-              result.children = Object.keys(items).map(b=>{
-                const result2 =  {
-                  name:b,
-                  type:items[b].type,
-                  format:items[b].format,
-                  description:items[b].description || '',
-                  _disableExpand:!['array','object'].includes(items[b] ?items[b].type : 'string'),
-                }
-                return result2
-              })
-            }
-            return result
-          })
+          return this.parseResponseObject(this.response[0].response.schema.properties)
         }else if(this.response[0].response.schema.type==='array'){
-          const items = this.response[0].response.schema.items.properties || {}
-          return[ {name:"list",type:"array",format:"[ ... ]",description:"列表", children: Object.keys(items).map(b=>{
-            const result =  {
-              name:b,
-              type:items[b].type,
-              format:items[b].format,
-              description:items[b].description || '',
-              _disableExpand:!['array','object'].includes(items[b] ?items[b].type : 'string'),
+          return [
+            {
+              name:"list",
+              type:"array",
+              format:"[ ... ]",
+              description:"列表",
+              children:this.parseResponse(this.response[0].response.schema),
             }
-            return result
-          })}]
+          ]
         }
       }
     },
@@ -198,6 +168,49 @@ export default {
     }
   },
   methods: {
+    parseResponse(val){
+      if(val.type==='array'){
+        if(val.items.type==='array'){
+          return this.parseResponseArray(val.items.items)
+        } else if(val.items.type==='object'){
+          return this.parseResponseObject(val.items.properties)
+        } else {
+          return [{
+            ...val.items,
+            name:val.items.name || "child_item",
+            _disableExpand:true
+          }]
+      }
+      } else if (val.type==='object' && val.properties){
+        return this.parseResponseObject(val.properties)
+      }
+    },
+    parseResponseArray(items){
+      return  Object.keys(items).map(o=>{
+        const hasChildren = ['array','object'].includes(items[o].type)
+        return {
+          name:o,
+          type:items[o].type,
+          format:items[o].format,
+          description:items[o].description || '',
+          _disableExpand:!hasChildren,
+          children:hasChildren ? this.parseResponse(items[o]): []
+        }
+      })
+    },
+    parseResponseObject(items){
+      return  Object.keys(items).map(o=>{
+        const hasChildren = ['array','object'].includes(items[o].type)
+        return {
+          name:o,
+          type:items[o].type,
+          format:items[o].format,
+          description:items[o].description || '',
+          _disableExpand:!hasChildren,
+          children:hasChildren ? this.parseResponse(items[o]): []
+        }
+      })
+    },
     getParamDataType (parameter) {
       const { type, schema } = parameter
       if (type) return type

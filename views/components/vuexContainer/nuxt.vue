@@ -4,7 +4,7 @@
     <!-- <p>{{ mock }}</p> -->
     <!-- <p>{{ request }}</p> -->
     <!-- <p>{{ entities }}</p> -->
-    <p>{{ response }}</p>
+    <!-- <p>{{ response }}</p> -->
   </div>
 </template>
 

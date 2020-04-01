@@ -11,7 +11,22 @@
         <Table :columns="columnsRequest" :data="request"></Table>
       </Tab-pane>
       <Tab-pane :label="$t('p.detail.expand.tab[1]')" name="response" v-if="mock.response_model">
-        <Table :columns="columnsResponse" :data="response"></Table>
+        <Collapse value="response-200">
+          <Panel v-for="(i,n) in response" :key="n" :name="'response-'+i.code">
+            status: {{i.code}} - {{i.message}}
+            <div slot="content">
+              <Table row-key="name" :columns="columnsResponseSchema" :data="responseSchema"></Table>
+              <p>
+                <pre>{{i.response.schema && i.response.schema.properties ? i.response.schema.properties:i.response.schema}}</pre>
+              </p>
+            </div>
+          </Panel>
+        </Collapse>
+      </Tab-pane>
+      <Tab-pane label="Mock示例" name="responseExample" v-if="responseExample">
+        <p>
+          <pre>{{responseExample}}</pre>
+        </p>
       </Tab-pane>
       <Tab-pane label="Class Model" name="class" v-if="mock.response_model && entities.js.length">
         <Collapse>
@@ -64,15 +79,17 @@ export default {
   data () {
     return {
       columnsRequest: [
-        {
-          type: 'expand',
-          width: 50,
-          render: (h, params) => h(DataTypeExpand, { props: { data: params.row.parameter } })
-        },
+        // {
+        //   type: 'expand',
+        //   width: 50,
+        //   render: (h, params) => h(DataTypeExpand, { props: { data: params.row.parameter } })
+        // },
         { title: this.$t('p.detail.expand.columnsRequest[0]'), key: 'name' },
         { title: this.$t('p.detail.expand.columnsRequest[1]'), key: 'description' },
         { title: this.$t('p.detail.expand.columnsRequest[2]'), key: 'paramType' },
-        { title: this.$t('p.detail.expand.columnsRequest[3]'), key: 'dataType' }
+        { title: this.$t('p.detail.expand.columnsRequest[3]'), key: 'dataType' },
+        { title: 'required',render: (h, params) => h('span', params.row.parameter.required ) },
+        { title: 'example',render: (h, params) => h('span', params.row.parameter.example ) },
       ],
       columnsResponse: [
         {
@@ -82,7 +99,18 @@ export default {
         },
         { title: this.$t('p.detail.expand.columnsResponse[0]'), key: 'code' },
         { title: this.$t('p.detail.expand.columnsResponse[1]'), key: 'message' }
-      ]
+      ],
+      columnsResponseSchema: [
+        {
+          type: 'expand',
+          width: 50,
+          render: (h, params) => h('Table', { props: { columns:this.columnsResponseSchema ,data:params.row.children } })
+        },
+        { title: "name", key: 'name' },
+        { title: "type", key: 'type' },
+        { title: "format", key: 'format' },
+        { title: "description", key: 'description' },
+      ],
     }
   },
   computed: {
@@ -107,6 +135,55 @@ export default {
         }
       })
     },
+    responseSchema(){
+      if(this.response && this.response[0]){
+        if(this.response[0].response.schema.type==='object'){
+          const schema = this.response[0].response.schema.properties || {}
+          return Object.keys(schema).map(o=>{
+            const result =  {
+              name:o,
+              type:schema[o].type,
+              format:schema[o].format,
+              description:schema[o].description || '',
+              _disableExpand:!['array','object'].includes(schema[o].type),
+              children:[]
+            }
+            if(schema[o].type==='array'){
+              result.children=[{name:'items',type:schema[o].items.type}]
+              const items = schema[o].items.properties || {}
+              result.children = Object.keys(items).map(b=>{
+                const result2 =  {
+                  name:b,
+                  type:items[b].type,
+                  format:items[b].format,
+                  description:items[b].description || '',
+                  _disableExpand:!['array','object'].includes(items[b] ?items[b].type : 'string'),
+                }
+                return result2
+              })
+            }
+            return result
+          })
+        }else if(this.response[0].response.schema.type==='array'){
+          const items = this.response[0].response.schema.items.properties || {}
+          return[ {name:"list",type:"array",format:"[ ... ]",description:"列表", children: Object.keys(items).map(b=>{
+            const result =  {
+              name:b,
+              type:items[b].type,
+              format:items[b].format,
+              description:items[b].description || '',
+              _disableExpand:!['array','object'].includes(items[b] ?items[b].type : 'string'),
+            }
+            return result
+          })}]
+        }
+      }
+    },
+    responseExample(){
+      if(this.response && this.response[0]){
+        return this.response[0].response.example
+      }
+    },
     entities () {
       const res = this.response.filter(o => {
         const code = o.code.toString()
@@ -128,6 +205,6 @@ export default {
         return schema.type === 'array' ? schema.items.type : schema.type
       }
     }
-  }
+  },
 }
 </script>

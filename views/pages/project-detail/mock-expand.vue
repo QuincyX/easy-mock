@@ -7,10 +7,10 @@
     <h2>{{$t('p.detail.expand.description')}}</h2>
     <p>{{mock.description}}</p>
     <Tabs value="request" v-if="mock.parameters || mock.response_model">
-      <Tab-pane :label="$t('p.detail.expand.tab[0]')" name="request" v-if="mock.parameters">
+      <Tab-pane class="mockItemPanelContainer" :label="$t('p.detail.expand.tab[0]')" name="request" v-if="mock.parameters">
         <Table :columns="columnsRequest" :data="request"></Table>
       </Tab-pane>
-      <Tab-pane :label="$t('p.detail.expand.tab[1]')" name="response" v-if="mock.response_model">
+      <Tab-pane class="mockItemPanelContainer" :label="$t('p.detail.expand.tab[1]')" name="response" v-if="mock.response_model">
         <Collapse value="response-200">
           <Panel v-for="(i,n) in response" :key="n" :name="'response-'+i.code">
             status: {{i.code}} - {{i.message}}
@@ -20,13 +20,19 @@
           </Panel>
         </Collapse>
       </Tab-pane>
-      <Tab-pane label="Mock示例" name="responseExample" v-if="responseExample">
+      <Tab-pane class="mockItemPanelContainer" label="Mock示例" name="responseExample" v-if="responseExample">
         <p>
           <pre>{{responseExample}}</pre>
         </p>
       </Tab-pane>
-      <Tab-pane label="Class Model" name="class" v-if="mock.response_model && entities.js.length">
+      <Tab-pane class="mockItemPanelContainer" label="Class Model" name="class" v-if="mock.response_model && entities.js.length">
         <Collapse>
+          <Panel>
+            TypeScript
+            <div slot="content">
+              <p>TS interface : to be finished</p>
+            </div>
+          </Panel>
           <Panel>
             JavaScript
             <div slot="content">
@@ -45,12 +51,18 @@
           </Panel>
         </Collapse>
       </Tab-pane>
-      <Tab-pane label="Vuex Action" name="vuex" v-if="mock.response_model && entities.js.length">
+      <Tab-pane class="mockItemPanelContainer" label="Vuex Action" name="vuex" v-if="mock.response_model && entities.js.length">
         <Collapse value="1">
           <Panel name="1">
             Nuxt module
             <div slot="content">
               <vuex-nuxt :request="request" :entities="entities" :response="response" :mock="mock"></vuex-nuxt>
+            </div>
+          </Panel>
+          <Panel name="2">
+            Vuex module
+            <div slot="content">
+              <p>to be finished</p>
             </div>
           </Panel>
         </Collapse>
@@ -221,3 +233,11 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.mockItemPanelContainer{
+  /* max-height: 50vh; */
+  /* overflow-y: auto; */
+
+  }
+</style>
